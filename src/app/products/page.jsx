@@ -1,4 +1,5 @@
 import ProductCard from '@/components/ProductCard';
+import { cacheLife } from 'next/cache';
 import React from 'react';
 
 export const metadata = {
@@ -8,6 +9,9 @@ export const metadata = {
 };
 
 async function Products() {
+  'use cache';
+  cacheLife('hours');
+
   const res = await fetch('https://api.escuelajs.co/api/v1/products?limit=10&offset=1');
   const result = await res.json();
 

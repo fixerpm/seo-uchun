@@ -1,7 +1,12 @@
-import SinglePageCard from '@/components/SinglePageCard';
+import { Suspense } from 'react';
+import { cacheLife } from 'next/cache';
 import { notFound } from 'next/navigation';
+import SinglePageCard from '@/components/SinglePageCard';
 
 async function getProduct(productid) {
+  'use cache';
+  cacheLife('hours');
+
   const res = await fetch(`https://api.escuelajs.co/api/v1/products/${productid}`);
   if (!res.ok) return null;
   return res.json();
@@ -24,7 +29,7 @@ export async function generateMetadata({ params }) {
   };
 }
 
-async function SinglePage({ params }) {
+async function ProductContent({ params }) {
   const { productid } = await params;
   const data = await getProduct(productid);
   if (!data) notFound();
@@ -36,4 +41,10 @@ async function SinglePage({ params }) {
   );
 }
 
-export default SinglePage;
+export default function SinglePage({ params }) {
+  return (
+    <Suspense fallback={<p className="p-8">Yuklanmoqda...</p>}>
+      <ProductContent params={params} />
+    </Suspense>
+  );
+}
